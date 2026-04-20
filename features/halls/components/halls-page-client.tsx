@@ -162,6 +162,10 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
     [ensureHallLoaded, scrollToHallCard],
   );
 
+  const handleMapSelectHallFromMap = useCallback((hallId: string) => {
+    void handleMapSelectHall(hallId);
+  }, [handleMapSelectHall]);
+
   const handleCardSelect = useCallback((hallId: string) => {
     setSelectedHallId(hallId);
     setHoveredHallId(hallId);
@@ -344,20 +348,12 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
         </div>
 
         <aside className="hidden min-h-0 border-l border-zinc-200 bg-zinc-200 lg:flex lg:flex-col lg:p-3">
-          <div className="mb-3 flex items-center justify-between rounded-xl border border-zinc-300 bg-white p-2">
-            <p className="text-xs font-medium text-zinc-700">Map View - Kuala Lumpur</p>
-            <Button type="button" variant="outline" className="h-7 border-zinc-300 px-2 text-[11px]">
-              Open in Map
-            </Button>
-          </div>
           <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-zinc-300 bg-zinc-50 shadow-sm">
             <HallsMap
               points={mapPoints}
               hoveredHallId={hoveredHallId}
               selectedHallId={selectedHallId}
-              onSelectHall={(hallId) => {
-                void handleMapSelectHall(hallId);
-              }}
+              onSelectHall={handleMapSelectHallFromMap}
               className="h-full w-full"
             />
           </div>
@@ -388,9 +384,7 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
               points={mapPoints}
               hoveredHallId={hoveredHallId}
               selectedHallId={selectedHallId}
-              onSelectHall={(hallId) => {
-                void handleMapSelectHall(hallId);
-              }}
+              onSelectHall={handleMapSelectHallFromMap}
               className="h-full w-full"
             />
           </div>

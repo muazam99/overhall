@@ -33,6 +33,7 @@ export const hallMapPointSchema = z.object({
   name: z.string().min(1),
   city: z.string().min(1),
   state: z.string().min(1),
+  basePriceMyr: z.number().int().nonnegative(),
   latitude: z.number(),
   longitude: z.number(),
 });

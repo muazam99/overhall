@@ -199,6 +199,7 @@ export async function getHallMapPoints(filters: HallsFilter) {
       name: hall.name,
       city: hall.city,
       state: hall.state,
+      basePriceMyr: hall.basePriceMyr,
       latitude: hall.latitude,
       longitude: hall.longitude,
     })
@@ -219,6 +220,7 @@ export async function getHallMapPoints(filters: HallsFilter) {
     name: row.name,
     city: row.city,
     state: row.state,
+    basePriceMyr: row.basePriceMyr,
     latitude: Number(row.latitude),
     longitude: Number(row.longitude),
   }));
