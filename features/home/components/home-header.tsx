@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { label: "Browse Halls", href: "#browse-halls" },
+  { label: "Browse Halls", href: "/halls" },
   { label: "How It Works", href: "#how-it-works" },
   { label: "Log In", href: "#log-in" },
 ];

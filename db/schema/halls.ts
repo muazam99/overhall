@@ -1,5 +1,6 @@
 import {
   boolean,
+  doublePrecision,
   index,
   integer,
   pgEnum,
@@ -28,6 +29,8 @@ export const hall = pgTable(
     state: text("state").notNull(),
     postalCode: text("postal_code"),
     country: text("country").notNull().default("Malaysia"),
+    latitude: doublePrecision("latitude"),
+    longitude: doublePrecision("longitude"),
     maxCapacity: integer("max_capacity").notNull(),
     basePriceMyr: integer("base_price_myr").notNull(),
     cleaningFeeMyr: integer("cleaning_fee_myr").notNull().default(0),

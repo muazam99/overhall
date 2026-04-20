@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { ArrowRight, CalendarDays } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useHomeUiStore } from "@/features/home/store/home-ui-store-provider";
@@ -23,7 +23,6 @@ function formatDateInputValue(date: Date) {
 export function HomeSearchBar() {
   const [isWhenPanelOpen, setWhenPanelOpen] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
   const activity = useHomeUiStore((state) => state.activity);
   const location = useHomeUiStore((state) => state.location);
   const whenDate = useHomeUiStore((state) => state.whenDate);
@@ -52,7 +51,7 @@ export function HomeSearchBar() {
     }
 
     const query = params.toString();
-    router.push(query ? `${pathname}?${query}` : pathname);
+    router.push(query ? `/halls?${query}` : "/halls");
   }
 
   function handleClearWhen() {
