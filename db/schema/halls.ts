@@ -52,7 +52,7 @@ export const hallPhoto = pgTable(
     hallId: text("hall_id")
       .notNull()
       .references(() => hall.id, { onDelete: "cascade" }),
-    url: text("url").notNull(),
+    path: text("path").notNull(),
     altText: text("alt_text"),
     sortOrder: integer("sort_order").notNull().default(0),
     isCover: boolean("is_cover").notNull().default(false),

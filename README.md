@@ -36,6 +36,25 @@ npm run db:migrate
 npm run dev
 ```
 
+## Cloudflare R2 (Hall Photos)
+
+- Hall photos are stored in Cloudflare R2, and the database stores only the object `path` (not full URL).
+- Configure these environment variables in `.env`:
+  - `R2_ACCOUNT_ID`
+  - `R2_BUCKET_NAME`
+  - `R2_ACCESS_KEY_ID`
+  - `R2_SECRET_ACCESS_KEY`
+  - `R2_PUBLIC_BASE_URL` (optional)
+- Generate a direct upload URL from:
+  - `POST /api/halls/photos/presigned-upload`
+  - Request body: `{ "hallId": "...", "fileName": "...", "contentType": "image/jpeg" }`
+  - Response: `{ "path": "...", "uploadUrl": "..." }`
+
+Frontend flow:
+1. Call the presigned endpoint.
+2. Upload file directly to `uploadUrl` with `PUT`.
+3. Save returned `path` in `hall_photo.path`.
+
 ## Scripts
 
 - `npm run dev`: start local dev server
