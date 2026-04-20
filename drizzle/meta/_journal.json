@@ -8,6 +8,13 @@
       "when": 1776525396746,
       "tag": "0000_previous_shatterstar",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776672487496,
+      "tag": "0001_harsh_the_executioner",
+      "breakpoints": true
     }
   ]
 }

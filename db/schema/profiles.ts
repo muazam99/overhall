@@ -7,6 +7,9 @@ export const profile = pgTable("profile", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" })
     .unique(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  phone: text("phone"),
   displayName: text("display_name").notNull(),
   bio: text("bio"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
