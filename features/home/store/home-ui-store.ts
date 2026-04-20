@@ -1,22 +1,30 @@
 import { createStore } from "zustand/vanilla";
 
 export type HomeUiState = {
-  detailsVisible: boolean;
+  activity: string;
+  location: string;
+  whenDate: string;
 };
 
 export type HomeUiActions = {
-  toggleDetails: () => void;
+  setActivity: (value: string) => void;
+  setLocation: (value: string) => void;
+  setWhenDate: (value: string) => void;
 };
 
 export type HomeUiStore = HomeUiState & HomeUiActions;
 
 export const defaultHomeUiState: HomeUiState = {
-  detailsVisible: true,
+  activity: "",
+  location: "George Town, Penang",
+  whenDate: "",
 };
 
 export function createHomeUiStore(initState: HomeUiState = defaultHomeUiState) {
   return createStore<HomeUiStore>()((set) => ({
     ...initState,
-    toggleDetails: () => set((state) => ({ detailsVisible: !state.detailsVisible })),
+    setActivity: (value) => set(() => ({ activity: value })),
+    setLocation: (value) => set(() => ({ location: value })),
+    setWhenDate: (value) => set(() => ({ whenDate: value })),
   }));
 }

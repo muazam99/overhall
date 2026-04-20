@@ -1,59 +1,28 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Boxes, Database, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { homeQueryOptions } from "@/features/home/queries/home.queries";
-import { useHomeUiStore } from "@/features/home/store/home-ui-store-provider";
+import { HomeHeader } from "@/features/home/components/home-header";
+import { HomeSearchBar } from "@/features/home/components/home-search-bar";
 
-const architectureItems = [
-  {
-    title: "UI Foundation",
-    description: "shadcn/ui + Tailwind configured with shared UI components and utility helpers.",
-    icon: Boxes,
-  },
-  {
-    title: "Data + Auth",
-    description: "Drizzle/PostgreSQL and Better Auth scaffolded with validated environment boundaries.",
-    icon: Database,
-  },
-  {
-    title: "State + Validation",
-    description: "TanStack Query handles server state while Zustand and Zod cover client state + contracts.",
-    icon: ShieldCheck,
-  },
-];
+const HERO_IMAGE_URL =
+  "https://images.unsplash.com/photo-1765568408601-481b13b02e71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzYyNDQwNDZ8&ixlib=rb-4.1.0&q=80&w=1920";
 
 export function HomeArchitectureCard() {
-  const { data } = useQuery(homeQueryOptions);
-  const detailsVisible = useHomeUiStore((state) => state.detailsVisible);
-  const toggleDetails = useHomeUiStore((state) => state.toggleDetails);
-
   return (
-    <section className="rounded-xl border bg-card p-6 shadow-sm">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">{data?.title ?? "Loading..."}</h1>
-          <p className="max-w-2xl text-sm text-muted-foreground">
-            {data?.description ?? "Loading architecture summary..."}
-          </p>
-        </div>
-        <Button variant="outline" onClick={toggleDetails}>
-          {detailsVisible ? "Hide details" : "Show details"}
-        </Button>
-      </div>
+    <section className="relative isolate min-h-svh overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url("${HERO_IMAGE_URL}")` }}
+      />
+      <div className="absolute inset-0 bg-black/10" />
 
-      {detailsVisible ? (
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          {architectureItems.map(({ icon: Icon, title, description }) => (
-            <article key={title} className="rounded-lg border bg-background p-4">
-              <Icon className="mb-2 h-5 w-5 text-primary" />
-              <h2 className="text-sm font-medium">{title}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-            </article>
-          ))}
+      <div className="relative mx-auto flex min-h-svh w-full max-w-420 flex-col px-4 pb-10 pt-6 sm:px-8 lg:px-12">
+        <HomeHeader />
+
+        <div className="flex flex-1 items-start justify-center pt-20 sm:pt-24 lg:pt-52">
+          <HomeSearchBar />
         </div>
-      ) : null}
+      </div>
     </section>
   );
 }
