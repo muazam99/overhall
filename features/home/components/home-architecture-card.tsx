@@ -1,6 +1,6 @@
 "use client";
 
-import { HomeHeader } from "@/features/home/components/home-header";
+import { SiteHeader } from "@/components/shared/site-header";
 import { HomeSearchBar } from "@/features/home/components/home-search-bar";
 
 const HERO_IMAGE_URL =
@@ -17,7 +17,7 @@ export function HomeArchitectureCard() {
       <div className="absolute inset-0 bg-black/10" />
 
       <div className="relative mx-auto flex min-h-svh w-full max-w-420 flex-col px-4 pb-10 pt-6 sm:px-8 lg:px-12">
-        <HomeHeader />
+        <SiteHeader />
 
         <div className="flex flex-1 items-start justify-center pt-20 sm:pt-24 lg:pt-52">
           <HomeSearchBar />

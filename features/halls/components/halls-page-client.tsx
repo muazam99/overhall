@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import { CalendarDays, MapPinned, Search, SlidersHorizontal } from "lucide-react";
+import { CalendarDays, MapPinned, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SiteHeader } from "@/components/shared/site-header";
 import { HallsMap } from "@/features/halls/components/halls-map";
 import {
   hallsSearchResponseSchema,
@@ -181,40 +181,11 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
 
   return (
     <section className="min-h-screen bg-zinc-100 text-zinc-900">
-      <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[1680px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4">
-            <p className="text-sm font-semibold tracking-[0.08em] text-zinc-900">OVERHALL</p>
-            <form action="/halls" method="get" className="hidden min-w-[360px] xl:block">
-              <div className="flex h-9 items-center gap-2 rounded-md border border-zinc-300 bg-white px-3">
-                <Search className="h-4 w-4 text-zinc-500" />
-                <input
-                  name="activity"
-                  defaultValue={filters.activity}
-                  placeholder="Search city, vibe, or capacity"
-                  className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-400"
-                />
-                <input type="hidden" name="location" value={filters.location} />
-                <input type="hidden" name="whenDate" value={filters.whenDate} />
-              </div>
-            </form>
-          </div>
-
-          <nav className="flex items-center gap-1">
-            <Button asChild variant="ghost" className="h-8 px-3 text-xs sm:text-sm">
-              <Link href="/halls">Browse</Link>
-            </Button>
-            <Button asChild variant="ghost" className="hidden h-8 px-3 text-xs sm:inline-flex sm:text-sm">
-              <Link href="#">Become a Host</Link>
-            </Button>
-            <Button asChild variant="outline" className="h-8 px-3 text-xs sm:text-sm">
-              <Link href="#">Sign In</Link>
-            </Button>
-          </nav>
-        </div>
+      <header className="sticky top-0 z-30">
+        <SiteHeader className="rounded-none border-x-0 border-t-0 shadow-none" />
       </header>
 
-      <div className="mx-auto grid h-[calc(100vh-70px)] max-w-[1680px] min-h-[760px] lg:grid-cols-[minmax(0,1.38fr)_minmax(0,1fr)]">
+      <div className="mx-auto grid h-[calc(100vh-70px)] max-w-420 min-h-190 lg:grid-cols-[minmax(0,1.38fr)_minmax(0,1fr)]">
         <div className="flex min-h-0 flex-col gap-3 overflow-hidden bg-zinc-100 p-4 sm:p-5">
           <div className="flex items-center justify-between">
             <div>
