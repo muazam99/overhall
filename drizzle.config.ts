@@ -1,6 +1,12 @@
 import { defineConfig } from "drizzle-kit";
 
-const fallbackDatabaseUrl = "postgresql://postgres:postgres@localhost:5432/overhall";
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error(
+    "DATABASE_URL is required for Drizzle. Run commands with environment loaded (for example: node --env-file=.env ...).",
+  );
+}
 
 export default defineConfig({
   out: "./drizzle",
@@ -9,6 +15,6 @@ export default defineConfig({
   strict: true,
   verbose: true,
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? fallbackDatabaseUrl,
+    url: databaseUrl,
   },
 });

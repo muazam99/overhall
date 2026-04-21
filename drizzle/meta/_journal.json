@@ -29,6 +29,13 @@
       "when": 1776695079307,
       "tag": "0003_steep_madame_hydra",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1776783730492,
+      "tag": "0004_clever_patch",
+      "breakpoints": true
     }
   ]
 }
