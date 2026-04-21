@@ -12,6 +12,21 @@ const seedHost = {
   email: "seed.host@overhall.local",
 };
 
+const amenityCatalog = [
+  { id: "seed-amenity-001", slug: "high-fidelity-sound-system", label: "High-fidelity sound system" },
+  { id: "seed-amenity-002", slug: "dual-4k-projectors-led-wall", label: "Dual 4K projectors + LED wall" },
+  { id: "seed-amenity-003", slug: "bridal-suite-makeup-room", label: "Bridal suite + makeup prep room" },
+  { id: "seed-amenity-004", slug: "on-site-event-coordinator", label: "On-site event coordinator" },
+  { id: "seed-amenity-005", slug: "private-parking", label: "Private parking area" },
+  { id: "seed-amenity-006", slug: "wheelchair-access", label: "Wheelchair access + guest lift" },
+  { id: "seed-amenity-007", slug: "high-speed-wifi", label: "High-speed Wi-Fi" },
+  { id: "seed-amenity-008", slug: "built-in-lighting-rig", label: "Built-in lighting rig" },
+  { id: "seed-amenity-009", slug: "air-conditioning", label: "Air-conditioning" },
+  { id: "seed-amenity-010", slug: "catering-pantry", label: "Catering pantry access" },
+  { id: "seed-amenity-011", slug: "stage-and-backdrop", label: "Stage + backdrop area" },
+  { id: "seed-amenity-012", slug: "prayer-room", label: "Prayer room" },
+];
+
 const halls = [
   {
     seedId: "seed-hall-001",
@@ -49,6 +64,15 @@ const halls = [
         isCover: false,
       },
     ],
+    amenities: [
+      "high-fidelity-sound-system",
+      "dual-4k-projectors-led-wall",
+      "bridal-suite-makeup-room",
+      "on-site-event-coordinator",
+      "private-parking",
+      "wheelchair-access",
+    ],
+    customAmenities: ["Dedicated bridal arrival entrance"],
   },
   {
     seedId: "seed-hall-002",
@@ -86,6 +110,15 @@ const halls = [
         isCover: false,
       },
     ],
+    amenities: [
+      "high-fidelity-sound-system",
+      "air-conditioning",
+      "private-parking",
+      "wheelchair-access",
+      "stage-and-backdrop",
+      "catering-pantry",
+    ],
+    customAmenities: ["Flexible partition walls"],
   },
   {
     seedId: "seed-hall-003",
@@ -123,6 +156,15 @@ const halls = [
         isCover: false,
       },
     ],
+    amenities: [
+      "high-speed-wifi",
+      "dual-4k-projectors-led-wall",
+      "built-in-lighting-rig",
+      "air-conditioning",
+      "private-parking",
+      "catering-pantry",
+    ],
+    customAmenities: ["Moveable staging risers"],
   },
   {
     seedId: "seed-hall-004",
@@ -160,6 +202,15 @@ const halls = [
         isCover: false,
       },
     ],
+    amenities: [
+      "high-fidelity-sound-system",
+      "bridal-suite-makeup-room",
+      "on-site-event-coordinator",
+      "private-parking",
+      "wheelchair-access",
+      "prayer-room",
+    ],
+    customAmenities: ["Lakeside ceremony access"],
   },
   {
     seedId: "seed-hall-005",
@@ -197,6 +248,15 @@ const halls = [
         isCover: false,
       },
     ],
+    amenities: [
+      "high-speed-wifi",
+      "dual-4k-projectors-led-wall",
+      "built-in-lighting-rig",
+      "air-conditioning",
+      "private-parking",
+      "stage-and-backdrop",
+    ],
+    customAmenities: ["Modular conference seating kits"],
   },
   {
     seedId: "seed-hall-006",
@@ -234,6 +294,15 @@ const halls = [
         isCover: false,
       },
     ],
+    amenities: [
+      "high-fidelity-sound-system",
+      "high-speed-wifi",
+      "on-site-event-coordinator",
+      "private-parking",
+      "wheelchair-access",
+      "catering-pantry",
+    ],
+    customAmenities: ["Skyline-view VIP holding room"],
   },
   {
     seedId: "seed-hall-007",
@@ -271,6 +340,15 @@ const halls = [
         isCover: false,
       },
     ],
+    amenities: [
+      "air-conditioning",
+      "high-speed-wifi",
+      "private-parking",
+      "wheelchair-access",
+      "catering-pantry",
+      "prayer-room",
+    ],
+    customAmenities: ["Indoor greenery feature wall"],
   },
   {
     seedId: "seed-hall-008",
@@ -308,6 +386,15 @@ const halls = [
         isCover: false,
       },
     ],
+    amenities: [
+      "high-fidelity-sound-system",
+      "bridal-suite-makeup-room",
+      "on-site-event-coordinator",
+      "private-parking",
+      "air-conditioning",
+      "stage-and-backdrop",
+    ],
+    customAmenities: ["In-house wedding decor support"],
   },
   {
     seedId: "seed-hall-009",
@@ -345,6 +432,15 @@ const halls = [
         isCover: false,
       },
     ],
+    amenities: [
+      "high-speed-wifi",
+      "air-conditioning",
+      "private-parking",
+      "wheelchair-access",
+      "stage-and-backdrop",
+      "prayer-room",
+    ],
+    customAmenities: ["Community kitchen corner"],
   },
   {
     seedId: "seed-hall-010",
@@ -382,6 +478,15 @@ const halls = [
         isCover: false,
       },
     ],
+    amenities: [
+      "high-speed-wifi",
+      "dual-4k-projectors-led-wall",
+      "built-in-lighting-rig",
+      "on-site-event-coordinator",
+      "private-parking",
+      "wheelchair-access",
+    ],
+    customAmenities: ["Hybrid-streaming control booth"],
   },
 ];
 
@@ -406,6 +511,25 @@ async function run() {
     );
 
     const hostUserId = userResult.rows[0].id;
+    const amenityIdBySlug = new Map();
+
+    for (const item of amenityCatalog) {
+      const amenityResult = await client.query(
+        `
+          INSERT INTO "amenity" ("id", "slug", "label", "is_active")
+          VALUES ($1, $2, $3, $4)
+          ON CONFLICT ("slug")
+          DO UPDATE SET
+            "label" = EXCLUDED."label",
+            "is_active" = EXCLUDED."is_active",
+            "updated_at" = NOW()
+          RETURNING "id";
+        `,
+        [item.id, item.slug, item.label, true],
+      );
+
+      amenityIdBySlug.set(item.slug, amenityResult.rows[0].id);
+    }
 
     for (const hall of halls) {
       const hallResult = await client.query(
@@ -505,10 +629,56 @@ async function run() {
           [photo.id, hallId, photo.path, photo.altText, photo.sortOrder, photo.isCover],
         );
       }
+
+      await client.query(`DELETE FROM "hall_amenities" WHERE "hall_id" = $1;`, [hallId]);
+
+      for (const [index, amenitySlug] of hall.amenities.entries()) {
+        const amenityId = amenityIdBySlug.get(amenitySlug);
+        if (!amenityId) {
+          throw new Error(`Amenity slug "${amenitySlug}" is missing from amenityCatalog`);
+        }
+
+        await client.query(
+          `
+            INSERT INTO "hall_amenities" (
+              "id",
+              "hall_id",
+              "amenity_id",
+              "custom_amenity",
+              "sort_order"
+            )
+            VALUES ($1, $2, $3, $4, $5);
+          `,
+          [`${hall.seedId}-amenity-${String(index + 1).padStart(2, "0")}`, hallId, amenityId, null, index],
+        );
+      }
+
+      for (const [index, customAmenity] of (hall.customAmenities ?? []).entries()) {
+        const offset = hall.amenities.length + index;
+        await client.query(
+          `
+            INSERT INTO "hall_amenities" (
+              "id",
+              "hall_id",
+              "amenity_id",
+              "custom_amenity",
+              "sort_order"
+            )
+            VALUES ($1, $2, $3, $4, $5);
+          `,
+          [
+            `${hall.seedId}-custom-amenity-${String(index + 1).padStart(2, "0")}`,
+            hallId,
+            null,
+            customAmenity,
+            offset,
+          ],
+        );
+      }
     }
 
     await client.query("COMMIT");
-    console.log("Seeded host user, halls, and hall photos successfully.");
+    console.log("Seeded host user, halls, hall photos, and amenities successfully.");
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;

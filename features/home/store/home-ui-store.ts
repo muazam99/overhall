@@ -16,7 +16,7 @@ export type HomeUiStore = HomeUiState & HomeUiActions;
 
 export const defaultHomeUiState: HomeUiState = {
   activity: "",
-  location: "George Town, Penang",
+  location: "",
   whenDate: "",
 };
 

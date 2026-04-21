@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CalendarDays, MapPinned, SlidersHorizontal } from "lucide-react";
+import { CalendarDays, MapPinned } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/shared/site-header";
 import { HallsMap } from "@/features/halls/components/halls-map";
@@ -31,7 +32,6 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
   const [hoveredHallId, setHoveredHallId] = useState<string | null>(null);
   const [selectedHallId, setSelectedHallId] = useState<string | null>(null);
   const [isMobileMapOpen, setMobileMapOpen] = useState(false);
-  const [isFilterPanelOpen, setFilterPanelOpen] = useState(false);
 
   const itemsRef = useRef(items);
   const hasMoreRef = useRef(hasMore);
@@ -166,18 +166,7 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
     void handleMapSelectHall(hallId);
   }, [handleMapSelectHall]);
 
-  const handleCardSelect = useCallback((hallId: string) => {
-    setSelectedHallId(hallId);
-    setHoveredHallId(hallId);
-  }, []);
-
   const resultSummary = `${items.length} loaded${hasMore ? ` of ${mapPoints.length}+` : ""} halls`;
-
-  const activeFilterChips = [
-    filters.activity ? `Activity: ${filters.activity}` : null,
-    filters.location ? `Location: ${filters.location}` : null,
-    filters.whenDate ? `Date: ${filters.whenDate}` : null,
-  ].filter(Boolean) as string[];
 
   return (
     <section className="min-h-screen bg-zinc-100 text-zinc-900">
@@ -187,70 +176,46 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
 
       <div className="mx-auto grid h-[calc(100vh-70px)] max-w-420 min-h-190 lg:grid-cols-[minmax(0,1.38fr)_minmax(0,1fr)]">
         <div className="flex min-h-0 flex-col gap-3 overflow-hidden bg-zinc-100 p-4 sm:p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight">Halls That Fit Your Event Energy</h1>
-              <p className="text-sm text-zinc-600">
-                {resultSummary}. Map markers always show full filtered results.
-              </p>
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="h-9 gap-2 border-zinc-300 bg-white"
-              onClick={() => setFilterPanelOpen((current) => !current)}
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-              Filters
-            </Button>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Halls That Fit Your Event Energy</h1>
+            <p className="text-sm text-zinc-600">
+              {resultSummary}. Map markers always show full filtered results.
+            </p>
           </div>
 
-          {activeFilterChips.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {activeFilterChips.map((chip) => (
-                <span
-                  key={chip}
-                  className="rounded-full border border-zinc-300 bg-white px-2.5 py-1 text-[11px] font-medium text-zinc-700"
-                >
-                  {chip}
-                </span>
-              ))}
-            </div>
-          ) : null}
-
-          {isFilterPanelOpen ? (
-            <form
-              action="/halls"
-              method="get"
-              className="grid gap-2 rounded-xl border border-zinc-200 bg-white p-3 sm:grid-cols-4"
-            >
+          <form
+            action="/halls"
+            method="get"
+            className="grid gap-2 rounded-xl border border-zinc-200 bg-white p-3 sm:grid-cols-6"
+          >
+            <input
+              name="activity"
+              placeholder="Activity"
+              defaultValue={filters.activity}
+              className="h-10 rounded-md border border-zinc-300 px-3 text-sm outline-none ring-0 focus:border-zinc-500"
+            />
+            <input
+              name="location"
+              placeholder="Location"
+              defaultValue={filters.location}
+              className="h-10 rounded-md border border-zinc-300 px-3 text-sm outline-none ring-0 focus:border-zinc-500"
+            />
+            <label className="sm:col-span-2 flex h-10 items-center gap-2 rounded-md border border-zinc-300 px-3 text-sm text-zinc-700">
+              <CalendarDays className="h-4 w-4 text-zinc-500" />
               <input
-                name="activity"
-                placeholder="Activity"
-                defaultValue={filters.activity}
-                className="h-10 rounded-md border border-zinc-300 px-3 text-sm outline-none ring-0 focus:border-zinc-500"
+                type="date"
+                name="whenDate"
+                defaultValue={filters.whenDate}
+                className="w-full bg-transparent outline-none"
               />
-              <input
-                name="location"
-                placeholder="Location"
-                defaultValue={filters.location}
-                className="h-10 rounded-md border border-zinc-300 px-3 text-sm outline-none ring-0 focus:border-zinc-500"
-              />
-              <label className="flex h-10 items-center gap-2 rounded-md border border-zinc-300 px-3 text-sm text-zinc-700">
-                <CalendarDays className="h-4 w-4 text-zinc-500" />
-                <input
-                  type="date"
-                  name="whenDate"
-                  defaultValue={filters.whenDate}
-                  className="w-full bg-transparent outline-none"
-                />
-              </label>
-              <Button type="submit" className="h-10 rounded-md bg-zinc-900 text-zinc-50 hover:bg-zinc-800">
-                Apply
-              </Button>
-            </form>
-          ) : null}
+            </label>
+            <Button type="submit" className="h-10 rounded-md bg-zinc-900 text-zinc-50 hover:bg-zinc-800">
+              Apply
+            </Button>
+            <Button asChild variant="outline" className="h-10 rounded-md border-zinc-300 bg-white">
+              <Link href="/halls">Reset</Link>
+            </Button>
+          </form>
 
           <div className="min-h-0 flex-1 overflow-auto pr-1">
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-3">
@@ -264,7 +229,6 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
                     ref={(node) => registerCardRef(item.id, node)}
                     onMouseEnter={() => setHoveredHallId(item.id)}
                     onMouseLeave={() => setHoveredHallId((current) => (current === item.id ? null : current))}
-                    onClick={() => handleCardSelect(item.id)}
                     className={`cursor-pointer overflow-hidden rounded-xl border bg-white shadow-sm transition ${
                       isSelected
                         ? "border-violet-500 ring-2 ring-violet-200"
@@ -273,7 +237,7 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
                           : "border-zinc-200"
                     }`}
                   >
-                    <div className="space-y-2 p-2.5">
+                    <Link href={`/halls/${item.slug}`} className="block space-y-2 p-2.5">
                       <div className="overflow-hidden rounded-lg bg-zinc-100">
                         {item.coverPhotoUrl ? (
                           <img src={item.coverPhotoUrl} alt={item.name} className="h-28 w-full object-cover" />
@@ -294,7 +258,7 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
                           <span>{item.maxCapacity} pax</span>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </article>
                 );
               })}
