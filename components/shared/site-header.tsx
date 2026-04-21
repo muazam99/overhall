@@ -24,7 +24,14 @@ export function SiteHeader({ className }: SiteHeaderProps) {
       )}
     >
       <Link href="/" aria-label="Go to home">
-        <Image src="/logo.png" alt="Overhall" width={220} height={52} className="h-8 w-auto sm:h-9" priority />
+        <Image
+          src="/logo.png"
+          alt="Overhall"
+          width={320}
+          height={120}
+          className="h-auto w-35 sm:w-50"
+          priority
+        />
       </Link>
 
       <nav className="flex items-center gap-1 sm:gap-2">
