@@ -2,12 +2,21 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
 type AuthMode = "login" | "register";
+
+const AUTH_VISUAL_IMAGES = [
+  "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=1600&q=80",
+];
 
 type HomeAuthModalProps = {
   open: boolean;
@@ -33,6 +42,9 @@ export function HomeAuthModal({
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [visualImageUrl] = useState(
+    () => AUTH_VISUAL_IMAGES[Math.floor(Math.random() * AUTH_VISUAL_IMAGES.length)],
+  );
 
   const title = useMemo(
     () => (mode === "login" ? "Sign in to Overhall" : "Join Overhall"),
@@ -77,7 +89,6 @@ export function HomeAuthModal({
       toast.success("Signed in successfully.");
       onAuthSuccess?.();
       onClose();
-      router.push("/halls");
       router.refresh();
     } catch {
       setErrorMessage("Unable to sign in. Please try again.");
@@ -126,7 +137,6 @@ export function HomeAuthModal({
 
       onAuthSuccess?.();
       onClose();
-      router.push("/halls");
       router.refresh();
     } catch {
       setErrorMessage("Unable to create your account.");
@@ -138,16 +148,34 @@ export function HomeAuthModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4 py-6">
       <div className="grid w-full max-w-5xl overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xl md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-        <div className="hidden bg-zinc-950 p-6 text-white md:flex md:flex-col md:justify-between">
+        <div
+          className="relative hidden overflow-hidden bg-zinc-950 p-6 text-white md:flex md:flex-col md:justify-between"
+          style={{
+            backgroundImage: `url("${visualImageUrl}")`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="absolute inset-0 bg-black/45" />
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+            <Image
+              src="/logo.png"
+              alt="Overhall"
+              width={320}
+              height={120}
+              className="h-auto w-44 opacity-95 drop-shadow-[0_8px_18px_rgba(0,0,0,0.45)]"
+              priority
+            />
+          </div>
           <div>
-            <p className="text-sm font-medium text-zinc-300">
+            <p className="relative text-sm font-medium text-zinc-200">
               {mode === "login" ? "Welcome back" : "Create account"}
             </p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight">
+            <h2 className="relative mt-2 text-3xl font-bold tracking-tight text-white">
               {mode === "login" ? "Sign in to keep booking faster" : "Start booking smarter"}
             </h2>
           </div>
-          <p className="text-sm text-zinc-300">
+          <p className="relative text-sm text-zinc-200">
             Curated halls, clear pricing, and fast booking workflows.
           </p>
         </div>

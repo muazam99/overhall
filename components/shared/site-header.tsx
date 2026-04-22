@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useOptionalAuthPrompt } from "@/features/auth/components/auth-prompt-provider";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ function resolveRole(role: string | null | undefined) {
 
 export function SiteHeader({ className, onLoginClick, onRegisterClick }: SiteHeaderProps) {
   const router = useRouter();
+  const authPrompt = useOptionalAuthPrompt();
   const { data: session, isPending } = authClient.useSession();
 
   const user = session?.user;
@@ -106,6 +108,11 @@ export function SiteHeader({ className, onLoginClick, onRegisterClick }: SiteHea
                   return;
                 }
 
+                if (authPrompt) {
+                  authPrompt.openLogin();
+                  return;
+                }
+
                 router.push("/");
               }}
             >
@@ -118,6 +125,11 @@ export function SiteHeader({ className, onLoginClick, onRegisterClick }: SiteHea
               onClick={() => {
                 if (onRegisterClick) {
                   onRegisterClick();
+                  return;
+                }
+
+                if (authPrompt) {
+                  authPrompt.openRegister();
                   return;
                 }
 

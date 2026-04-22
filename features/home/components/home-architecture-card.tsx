@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/shared/site-header";
-import { HomeAuthModal } from "@/features/auth/components/home-auth-modal";
+import { useAuthPrompt } from "@/features/auth/components/auth-prompt-provider";
 import { HomeSearchBar } from "@/features/home/components/home-search-bar";
-import { authClient } from "@/lib/auth-client";
 import { AUTH_MESSAGE_COOKIE, AUTH_PROMPT_COOKIE, AUTH_PROMPT_LOGIN } from "@/lib/auth-ui";
 
 const HERO_IMAGE_URL =
@@ -15,21 +14,27 @@ type HomeArchitectureCardProps = {
   initialAuthMessage: string | null;
 };
 
-type AuthMode = "login" | "register";
-
 export function HomeArchitectureCard({
   initialAuthPrompt,
   initialAuthMessage,
 }: HomeArchitectureCardProps) {
-  const { data: session } = authClient.useSession();
-  const [isAuthOpen, setAuthOpen] = useState(initialAuthPrompt === AUTH_PROMPT_LOGIN);
-  const [authMode, setAuthMode] = useState<AuthMode>("login");
-  const [bannerMessage, setBannerMessage] = useState<string | null>(initialAuthMessage);
+  const { openLogin } = useAuthPrompt();
+  const [bannerMessage, setBannerMessage] = useState<string | null>(
+    initialAuthPrompt === AUTH_PROMPT_LOGIN ? null : initialAuthMessage,
+  );
 
   useEffect(() => {
     document.cookie = `${AUTH_PROMPT_COOKIE}=; Max-Age=0; path=/`;
     document.cookie = `${AUTH_MESSAGE_COOKIE}=; Max-Age=0; path=/`;
   }, []);
+
+  useEffect(() => {
+    if (initialAuthPrompt !== AUTH_PROMPT_LOGIN) {
+      return;
+    }
+
+    openLogin(initialAuthMessage ?? "Please log in to continue.");
+  }, [initialAuthMessage, initialAuthPrompt, openLogin]);
 
   useEffect(() => {
     if (!bannerMessage) {
@@ -43,16 +48,6 @@ export function HomeArchitectureCard({
     return () => window.clearTimeout(timeout);
   }, [bannerMessage]);
 
-  function openLoginModal() {
-    setAuthMode("login");
-    setAuthOpen(true);
-  }
-
-  function openRegisterModal() {
-    setAuthMode("register");
-    setAuthOpen(true);
-  }
-
   return (
     <section className="relative isolate min-h-svh overflow-hidden">
       <div
@@ -63,7 +58,7 @@ export function HomeArchitectureCard({
       <div className="absolute inset-0 bg-black/10" />
 
       <div className="relative mx-auto flex min-h-svh w-full max-w-420 flex-col px-4 pb-10 pt-6 sm:px-8 lg:px-12">
-        <SiteHeader onLoginClick={openLoginModal} onRegisterClick={openRegisterModal} />
+        <SiteHeader />
 
         {bannerMessage ? (
           <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">
@@ -75,15 +70,6 @@ export function HomeArchitectureCard({
           <HomeSearchBar />
         </div>
       </div>
-
-      <HomeAuthModal
-        open={isAuthOpen && !session?.user?.id}
-        mode={authMode}
-        onClose={() => setAuthOpen(false)}
-        onModeChange={setAuthMode}
-        bannerMessage={bannerMessage}
-        onAuthSuccess={() => setBannerMessage(null)}
-      />
     </section>
   );
 }
