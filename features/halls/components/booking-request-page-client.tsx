@@ -2,9 +2,11 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { SiteHeader } from "@/components/shared/site-header";
 import { Button } from "@/components/ui/button";
+import { useAuthPrompt } from "@/features/auth/components/auth-prompt-provider";
 import type { BookingRequestQuery } from "@/features/halls/schemas/booking-request.schema";
 import type { HallDetailsPayload } from "@/features/halls/schemas/hall-details.schema";
 
@@ -61,11 +63,15 @@ export function BookingRequestPageClient({
   request,
   defaults,
 }: BookingRequestPageClientProps) {
+  const router = useRouter();
+  const { openLogin } = useAuthPrompt();
   const [contactName, setContactName] = useState(defaults?.contactName ?? "");
   const [contactPhone, setContactPhone] = useState("");
   const [contactEmail, setContactEmail] = useState(defaults?.contactEmail ?? "");
   const [notes, setNotes] = useState("");
   const [agreedPolicy, setAgreedPolicy] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const formattedDateLong = useMemo(() => formatEventDate(request.eventDate, true), [request.eventDate]);
   const formattedDateShort = useMemo(() => formatEventDate(request.eventDate, false), [request.eventDate]);
@@ -73,6 +79,70 @@ export function BookingRequestPageClient({
 
   const locationLabel = `${payload.hall.city}, ${payload.hall.state}`;
   const metaLabel = `${formattedDateShort} | ${formattedStartTime} | ${request.guestCount} guests`;
+
+  async function handleRequestToBook() {
+    if (isSubmitting) {
+      return;
+    }
+
+    if (!agreedPolicy) {
+      setSubmitError("Please agree to the venue terms and cancellation policy before submitting.");
+      return;
+    }
+
+    setSubmitError(null);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          hallId: payload.hall.id,
+          eventDate: request.eventDate,
+          startTime: request.startTime,
+          endTime: request.endTime,
+          guestCount: request.guestCount,
+          contactName: contactName.trim() ? contactName.trim() : undefined,
+          contactPhone: contactPhone.trim() ? contactPhone.trim() : undefined,
+          contactEmail: contactEmail.trim() ? contactEmail.trim() : undefined,
+          notes: notes.trim() ? notes.trim() : undefined,
+        }),
+      });
+
+      const data = (await response.json().catch(() => null)) as
+        | {
+            id?: string;
+            error?: string;
+          }
+        | null;
+
+      if (response.status === 401) {
+        openLogin("Please sign in to submit your booking request.");
+        return;
+      }
+
+      if (!response.ok) {
+        setSubmitError(data?.error ?? "Unable to submit booking request right now.");
+        return;
+      }
+
+      if (!data?.id) {
+        setSubmitError("Unable to continue to the submitted page. Please try again.");
+        return;
+      }
+
+      toast.success("Booking request submitted.");
+      const query = new URLSearchParams({ bookingId: data.id });
+      router.push(`/halls/${payload.hall.slug}/booking-request/submitted?${query.toString()}`);
+    } catch {
+      setSubmitError("Unable to submit booking request right now.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <section className="min-h-screen bg-zinc-100 text-zinc-900">
@@ -182,7 +252,12 @@ export function BookingRequestPageClient({
                 <input
                   type="checkbox"
                   checked={agreedPolicy}
-                  onChange={(event) => setAgreedPolicy(event.target.checked)}
+                  onChange={(event) => {
+                    setAgreedPolicy(event.target.checked);
+                    if (event.target.checked) {
+                      setSubmitError(null);
+                    }
+                  }}
                   className="h-4 w-4 rounded border-zinc-300"
                 />
                 <span>I agree to the venue terms and cancellation policy.</span>
@@ -217,12 +292,13 @@ export function BookingRequestPageClient({
               <div className="mt-3 grid gap-2">
                 <Button
                   type="button"
+                  disabled={isSubmitting}
                   className="h-10 rounded-md bg-zinc-900 text-zinc-50 hover:bg-zinc-800"
                   onClick={() => {
-                    toast.info("Booking request submission will be enabled soon.");
+                    void handleRequestToBook();
                   }}
                 >
-                  Request to book
+                  {isSubmitting ? "Submitting..." : "Request to book"}
                 </Button>
                 <Button
                   type="button"
@@ -235,6 +311,11 @@ export function BookingRequestPageClient({
                   Save to shortlist
                 </Button>
               </div>
+              {submitError ? (
+                <div className="mt-3 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
+                  {submitError}
+                </div>
+              ) : null}
 
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex items-center justify-between text-zinc-600">
