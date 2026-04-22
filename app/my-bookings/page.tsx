@@ -21,7 +21,6 @@ export default async function MyBookingsPage() {
       guestCount: booking.guestCount,
       totalFeeMyr: booking.totalFeeMyr,
       status: booking.status,
-      paymentStatus: booking.paymentStatus,
       hallName: hall.name,
       hallSlug: hall.slug,
       hallCity: hall.city,
@@ -51,7 +50,6 @@ export default async function MyBookingsPage() {
           initialItems={rows.map((row) => ({
             ...row,
             status: row.status,
-            paymentStatus: row.paymentStatus,
           }))}
         />
       </main>

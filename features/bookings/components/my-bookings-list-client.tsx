@@ -12,7 +12,6 @@ type BookingListItem = {
   guestCount: number;
   totalFeeMyr: number;
   status: "pending" | "confirmed" | "cancelled" | "completed";
-  paymentStatus: "unpaid" | "paid" | "refunded";
   hallName: string;
   hallSlug: string;
   hallCity: string;
@@ -102,7 +101,6 @@ export function MyBookingsListClient({ initialItems }: MyBookingsListClientProps
               {item.startTime} - {item.endTime}
             </span>
             <span>{item.guestCount} guests</span>
-            <span>Payment: {item.paymentStatus}</span>
           </div>
           <div className="mt-4 flex items-center gap-2">
             <Button asChild size="sm" variant="outline" className="border-zinc-300 bg-white">
