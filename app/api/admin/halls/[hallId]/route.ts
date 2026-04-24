@@ -1,15 +1,21 @@
-import { asc, desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { hall } from "@/db/schema";
+import { z } from "zod";
 import { manageHallSavePayloadSchema } from "@/features/admin/schemas/manage-hall.schema";
 import {
-  createManageHall,
+  getManageHallEditorPayload,
   ManageHallApiError,
+  updateManageHall,
 } from "@/features/admin/server/manage-hall";
 import { getAuthzErrorResponse, requireRole } from "@/lib/rbac";
 
-export async function GET() {
+const paramsSchema = z.object({
+  hallId: z.string().min(1),
+});
+
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ hallId: string }> },
+) {
   try {
     await requireRole("admin");
   } catch (error) {
@@ -20,33 +26,23 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const rows = await db
-    .select({
-      id: hall.id,
-      name: hall.name,
-      slug: hall.slug,
-      hostUserId: hall.hostUserId,
-      city: hall.city,
-      state: hall.state,
-      maxCapacity: hall.maxCapacity,
-      coverPhotoUrl: hall.coverPhotoUrl,
-      status: hall.status,
-      createdAt: hall.createdAt,
-      updatedAt: hall.updatedAt,
-    })
-    .from(hall)
-    .orderBy(desc(hall.updatedAt), asc(hall.id));
+  const params = paramsSchema.safeParse(await context.params);
+  if (!params.success) {
+    return NextResponse.json({ error: "Invalid hall id." }, { status: 400 });
+  }
 
-  return NextResponse.json({
-    items: rows.map((row) => ({
-      ...row,
-      createdAt: row.createdAt.toISOString(),
-      updatedAt: row.updatedAt.toISOString(),
-    })),
-  });
+  const payload = await getManageHallEditorPayload(params.data.hallId);
+  if (!payload) {
+    return NextResponse.json({ error: "Hall not found." }, { status: 404 });
+  }
+
+  return NextResponse.json(payload);
 }
 
-export async function POST(request: Request) {
+export async function PATCH(
+  request: Request,
+  context: { params: Promise<{ hallId: string }> },
+) {
   try {
     await requireRole("admin");
   } catch (error) {
@@ -55,6 +51,11 @@ export async function POST(request: Request) {
       return NextResponse.json(authError.body, { status: authError.status });
     }
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const params = paramsSchema.safeParse(await context.params);
+  if (!params.success) {
+    return NextResponse.json({ error: "Invalid hall id." }, { status: 400 });
   }
 
   const payload = manageHallSavePayloadSchema.safeParse(await request.json().catch(() => null));
@@ -66,20 +67,17 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await createManageHall(payload.data);
-    return NextResponse.json(
-      {
-        ok: true,
-        hallId: result.hallId,
-        slug: result.slug,
-      },
-      { status: 201 },
-    );
+    const result = await updateManageHall(params.data.hallId, payload.data);
+    return NextResponse.json({
+      ok: true,
+      hallId: result.hallId,
+      slug: result.slug,
+    });
   } catch (error) {
     if (error instanceof ManageHallApiError) {
       return NextResponse.json({ error: error.message }, { status: error.status });
     }
 
-    return NextResponse.json({ error: "Failed to create hall." }, { status: 500 });
+    return NextResponse.json({ error: "Failed to update hall." }, { status: 500 });
   }
 }
