@@ -12,6 +12,7 @@ import {
   type HallsInitialPayload,
   type HallsSearchResponse,
 } from "@/features/halls/schemas/halls-search.schema";
+import { resolveHallPhotoUrl } from "@/lib/hall-photo";
 
 type CursorPayload = {
   updatedAt: string;
@@ -183,7 +184,7 @@ export async function searchHallsPage(params: SearchPageParams): Promise<HallsSe
       state: item.state,
       maxCapacity: item.maxCapacity,
       basePriceMyr: item.basePriceMyr,
-      coverPhotoUrl: item.coverPhotoUrl,
+      coverPhotoUrl: resolveHallPhotoUrl(item.coverPhotoUrl),
       updatedAt: item.updatedAt.toISOString(),
     })),
     nextCursor,

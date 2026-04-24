@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CalendarDays, MapPinned } from "lucide-react";
 import Link from "next/link";
+import { HallCoverImage } from "@/components/shared/hall-cover-image";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/shared/site-header";
 import { HallsMap } from "@/features/halls/components/halls-map";
@@ -239,13 +240,11 @@ export function HallsPageClient({ initialPayload }: HallsPageClientProps) {
                   >
                     <Link href={`/halls/${item.slug}`} className="block space-y-2 p-2.5">
                       <div className="overflow-hidden rounded-lg bg-zinc-100">
-                        {item.coverPhotoUrl ? (
-                          <img src={item.coverPhotoUrl} alt={item.name} className="h-28 w-full object-cover" />
-                        ) : (
-                          <div className="flex h-28 items-center justify-center text-sm text-zinc-500">
-                            No photo
-                          </div>
-                        )}
+                        <HallCoverImage
+                          src={item.coverPhotoUrl}
+                          alt={item.name}
+                          className="h-28 w-full object-cover"
+                        />
                       </div>
 
                       <div className="flex flex-col gap-1 px-0.5 pb-0.5">

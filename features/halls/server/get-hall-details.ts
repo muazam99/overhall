@@ -5,28 +5,7 @@ import {
   hallDetailsPayloadSchema,
   type HallDetailsPayload,
 } from "@/features/halls/schemas/hall-details.schema";
-import { getHallPhotoPublicUrl } from "@/lib/storage/r2";
-
-function resolveHallPhotoUrl(path: string) {
-  const normalizedPath = path.trim();
-  if (normalizedPath.length === 0) {
-    return null;
-  }
-
-  if (
-    normalizedPath.startsWith("http://") ||
-    normalizedPath.startsWith("https://") ||
-    normalizedPath.startsWith("//")
-  ) {
-    return normalizedPath;
-  }
-
-  try {
-    return getHallPhotoPublicUrl(normalizedPath);
-  } catch {
-    return null;
-  }
-}
+import { resolveHallPhotoUrl } from "@/lib/hall-photo";
 
 export async function getHallDetailsBySlug(slug: string): Promise<HallDetailsPayload | null> {
   const normalizedSlug = slug.trim();
@@ -106,7 +85,10 @@ export async function getHallDetailsBySlug(slug: string): Promise<HallDetailsPay
   };
 
   return hallDetailsPayloadSchema.parse({
-    hall: hallRow,
+    hall: {
+      ...hallRow,
+      coverPhotoUrl: resolveHallPhotoUrl(hallRow.coverPhotoUrl),
+    },
     photos,
     amenities,
     bookingSummary,

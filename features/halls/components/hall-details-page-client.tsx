@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { CalendarDays, ChevronDown, Clock3 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { HallCoverImage } from "@/components/shared/hall-cover-image";
 import { SiteHeader } from "@/components/shared/site-header";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -169,7 +170,7 @@ export function HallDetailsPageClient({ payload }: HallDetailsPageClientProps) {
 
     return (
       <div className={cn("overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100", className)}>
-        <img src={photo.url} alt={photo.alt} className="h-full w-full object-cover" />
+        <HallCoverImage src={photo.url} alt={photo.alt} className="h-full w-full object-cover" />
       </div>
     );
   }

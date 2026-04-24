@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/shared/site-header";
 import { db } from "@/db";
 import { hall } from "@/db/schema";
 import { ManageHallsClient } from "@/features/admin/components/manage-halls-client";
+import { resolveHallPhotoUrl } from "@/lib/hall-photo";
 import { requireRole } from "@/lib/rbac";
 
 export default async function AdminManageHallsPage() {
@@ -13,7 +14,7 @@ export default async function AdminManageHallsPage() {
     redirect("/");
   }
 
-  const halls = await db
+  const hallRows = await db
     .select({
       id: hall.id,
       name: hall.name,
@@ -27,6 +28,11 @@ export default async function AdminManageHallsPage() {
     .from(hall)
     .orderBy(desc(hall.updatedAt), asc(hall.id))
     .limit(20);
+
+  const halls = hallRows.map((item) => ({
+    ...item,
+    coverPhotoUrl: resolveHallPhotoUrl(item.coverPhotoUrl),
+  }));
 
   return (
     <section className="min-h-screen bg-zinc-100 text-zinc-900">

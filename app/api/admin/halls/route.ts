@@ -7,6 +7,7 @@ import {
   createManageHall,
   ManageHallApiError,
 } from "@/features/admin/server/manage-hall";
+import { resolveHallPhotoUrl } from "@/lib/hall-photo";
 import { getAuthzErrorResponse, requireRole } from "@/lib/rbac";
 
 export async function GET() {
@@ -40,6 +41,7 @@ export async function GET() {
   return NextResponse.json({
     items: rows.map((row) => ({
       ...row,
+      coverPhotoUrl: resolveHallPhotoUrl(row.coverPhotoUrl),
       createdAt: row.createdAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
     })),

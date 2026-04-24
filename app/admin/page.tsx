@@ -156,11 +156,11 @@ export default async function AdminPage() {
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-zinc-900">
-                    {item.id} · {item.hallName ?? "Unknown hall"}
+                    {item.id} | {item.hallName ?? "Unknown hall"}
                   </p>
                   <p className="text-xs text-zinc-500">
-                    {formatDate(item.eventDate)} · {formatTime(item.startTime)} -{" "}
-                    {formatTime(item.endTime)} · {item.guestCount} pax
+                    {formatDate(item.eventDate)} | {formatTime(item.startTime)} -{" "}
+                    {formatTime(item.endTime)} | {item.guestCount} pax
                   </p>
                   <span
                     className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${statusPillClass(item.status)}`}
@@ -170,7 +170,7 @@ export default async function AdminPage() {
                   </span>
                 </div>
                 <Button asChild variant="outline" size="sm" className="border-zinc-300 bg-white">
-                  <Link href={`/admin/bookings?bookingId=${item.id}`}>{actionLabel(item.status)}</Link>
+                  <Link href={`/admin/bookings/${item.id}`}>{actionLabel(item.status)}</Link>
                 </Button>
               </article>
             ))}

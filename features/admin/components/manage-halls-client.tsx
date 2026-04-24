@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { HallCoverImage } from "@/components/shared/hall-cover-image";
 import { Button } from "@/components/ui/button";
 
 type HallStatus = "draft" | "published" | "archived";
@@ -33,14 +34,6 @@ function statusPillClass(status: HallStatus) {
   return "bg-rose-100 text-rose-700";
 }
 
-const fallbackHallImages = [
-  "https://images.unsplash.com/photo-1526568929-7cdd510e77fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzY5NTIwOTJ8&ixlib=rb-4.1.0&q=80&w=1080",
-  "https://images.unsplash.com/photo-1654869293304-636deb88354c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzY5NTIwOTN8&ixlib=rb-4.1.0&q=80&w=1080",
-  "https://images.unsplash.com/photo-1764643588195-e18878c0a39c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzY5NTIwOTN8&ixlib=rb-4.1.0&q=80&w=1080",
-  "https://images.unsplash.com/photo-1511286148006-ec48824e3282?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzY5NTIwOTR8&ixlib=rb-4.1.0&q=80&w=1080",
-  "https://images.unsplash.com/photo-1723518120379-0a41cc403155?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzY5NTIwOTR8&ixlib=rb-4.1.0&q=80&w=1080",
-];
-
 export function ManageHallsClient({ initialItems }: ManageHallsClientProps) {
   const items = initialItems;
 
@@ -65,17 +58,18 @@ export function ManageHallsClient({ initialItems }: ManageHallsClientProps) {
       ) : null}
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {items.map((item, index) => (
+        {items.map((item) => (
           <article
             key={item.id}
             className="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.08)]"
           >
-            <div
-              className="h-40 w-full border-b border-zinc-200 bg-zinc-200 bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${item.coverPhotoUrl ?? fallbackHallImages[index % fallbackHallImages.length]})`,
-              }}
-            />
+            <div className="h-40 w-full border-b border-zinc-200 bg-zinc-200">
+              <HallCoverImage
+                src={item.coverPhotoUrl}
+                alt={item.name}
+                className="h-full w-full object-cover"
+              />
+            </div>
 
             <div className="space-y-1 border-b border-zinc-200 px-6 py-5">
               <p className="truncate text-base font-medium text-zinc-900">{item.name}</p>

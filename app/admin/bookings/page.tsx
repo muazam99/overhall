@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { asc, desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { HallCoverImage } from "@/components/shared/hall-cover-image";
 import { SiteHeader } from "@/components/shared/site-header";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db";
 import { booking, hall, user } from "@/db/schema";
+import { resolveHallPhotoUrl } from "@/lib/hall-photo";
 import { requireRole } from "@/lib/rbac";
 
 function formatDate(date: string) {
@@ -50,7 +52,6 @@ export default async function AdminManageBookingsPage() {
       guestCount: booking.guestCount,
       status: booking.status,
       hallName: hall.name,
-      hallSlug: hall.slug,
       hallCity: hall.city,
       hallCoverPhoto: hall.coverPhotoUrl,
       bookerName: user.name,
@@ -85,18 +86,21 @@ export default async function AdminManageBookingsPage() {
                 key={item.id}
                 className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm"
               >
-                <div
-                  className="h-32 w-full bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500 bg-cover bg-center sm:h-36"
-                  style={item.hallCoverPhoto ? { backgroundImage: `url(${item.hallCoverPhoto})` } : undefined}
-                />
+                <div className="h-32 w-full bg-zinc-200 sm:h-36">
+                  <HallCoverImage
+                    src={resolveHallPhotoUrl(item.hallCoverPhoto)}
+                    alt={item.hallName ?? "Hall cover photo"}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
 
                 <div className="flex flex-wrap items-start justify-between gap-3 p-4">
                   <div className="min-w-0 space-y-1">
                     <p className="truncate text-sm font-semibold text-zinc-900">
-                      {item.id} · {item.bookerName ?? "Guest User"}
+                      {item.bookerName ?? "Guest User"}
                     </p>
                     <p className="text-xs text-zinc-600">
-                      {item.hallName ?? "Unknown Hall"} · {formatDate(item.eventDate)} ·{" "}
+                      {item.hallName ?? "Unknown Hall"} | {formatDate(item.eventDate)} |{" "}
                       {item.guestCount} pax
                     </p>
                     {item.hallCity ? (
@@ -111,9 +115,7 @@ export default async function AdminManageBookingsPage() {
                   </div>
 
                   <Button asChild variant="outline" className="border-zinc-300 bg-white">
-                    <Link href={item.hallSlug ? `/halls/${item.hallSlug}` : `/admin?bookingId=${item.id}`}>
-                      View Booking
-                    </Link>
+                    <Link href={`/admin/bookings/${item.id}`}>View Booking</Link>
                   </Button>
                 </div>
               </article>

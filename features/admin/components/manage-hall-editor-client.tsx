@@ -348,7 +348,9 @@ export function ManageHallEditorClient({ mode, initialData }: ManageHallEditorCl
       );
     }
 
-    const nextState = createEditableState(payload);
+    const nextState = createEditableState(
+      payload as ManageHallEditorClientProps["initialData"],
+    );
     setState(nextState);
     setRemovedPhotoIds([]);
   }
