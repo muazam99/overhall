@@ -11,30 +11,102 @@ Architecture-first Next.js baseline using:
 
 ## Quick Start
 
-1. Install dependencies:
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-2. Copy environment template and fill values:
+### 2. Create a PostgreSQL database first
+
+This project will not boot until `DATABASE_URL` points to a real PostgreSQL database.
+
+Option A: use your local PostgreSQL install
+
+```bash
+createdb overhall
+```
+
+If `createdb` is not available, you can create it with `psql`:
+
+```bash
+psql -U postgres -c "CREATE DATABASE overhall;"
+```
+
+Option B: run PostgreSQL in Docker
+
+```bash
+docker run --name overhall-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=overhall -p 5432:5432 -d postgres:16
+```
+
+Default local connection string:
+
+```bash
+postgresql://postgres:postgres@localhost:5432/overhall
+```
+
+### 3. Copy the environment template
+
+Use `.env.example` as the starting point for your local `.env`.
 
 ```bash
 cp .env.example .env
 ```
 
-3. Run migrations:
+If you are on Windows PowerShell and `cp` does not work:
 
 ```bash
-npm run db:generate
+Copy-Item .env.example .env
+```
+
+### 4. Fill the required `.env` values
+
+At minimum, set these before starting the app:
+
+- `DATABASE_URL`: PostgreSQL connection string for the database you created above
+- `BETTER_AUTH_SECRET`: any long random string for local development
+- `BETTER_AUTH_URL`: `http://localhost:3000`
+- `NEXT_PUBLIC_APP_URL`: `http://localhost:3000`
+
+You can generate a local auth secret with:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Cloudflare R2 variables are used for hall photo upload and photo URL generation:
+
+- `R2_ACCOUNT_ID`
+- `R2_BUCKET_NAME`
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+- `R2_PUBLIC_BASE_URL` (optional)
+
+If you do not have R2 set up yet, the app can still be developed locally, but hall photo upload/delete flows and generated photo URLs will not work correctly until real R2 credentials are added.
+
+### 5. Run the existing migrations
+
+```bash
 npm run db:migrate
 ```
 
-4. Start the app:
+`npm run db:generate` is only needed when you change the Drizzle schema and want to create a new migration. It is not required for a fresh clone.
+
+### 6. Optionally seed sample data
+
+```bash
+npm run db:seed:halls
+```
+
+This seeds sample halls, amenities, and a seed host user into your local database.
+
+### 7. Start the app
 
 ```bash
 npm run dev
 ```
+
+The app will be available at [http://localhost:3000](http://localhost:3000).
 
 ## Cloudflare R2 (Hall Photos)
 
@@ -60,8 +132,8 @@ Frontend flow:
 - `npm run dev`: start local dev server
 - `npm run build`: production build
 - `npm run lint`: lint source files
-- `npm run db:generate`: generate SQL migrations from Drizzle schema
-- `npm run db:migrate`: apply migrations
+- `npm run db:generate`: generate a new SQL migration after changing the Drizzle schema
+- `npm run db:migrate`: apply committed migrations to the configured PostgreSQL database
 - `npm run db:studio`: open Drizzle Studio
 - `npm run db:seed:halls`: seed sample halls and amenities
 - `npm run admin:promote -- you@example.com`: manually promote a user to admin role
