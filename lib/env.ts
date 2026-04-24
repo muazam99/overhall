@@ -7,10 +7,6 @@ const serverEnvSchema = z.object({
   BETTER_AUTH_URL: z.string().url("BETTER_AUTH_URL must be a valid URL"),
 });
 
-const clientEnvSchema = z.object({
-  NEXT_PUBLIC_APP_URL: z.string().url("NEXT_PUBLIC_APP_URL must be a valid URL"),
-});
-
 const storageEnvSchema = z.object({
   R2_ACCOUNT_ID: z.string().min(1, "R2_ACCOUNT_ID is required"),
   R2_BUCKET_NAME: z.string().min(1, "R2_BUCKET_NAME is required"),
@@ -23,7 +19,6 @@ const storageEnvSchema = z.object({
 });
 
 let cachedServerEnv: z.infer<typeof serverEnvSchema> | null = null;
-let cachedClientEnv: z.infer<typeof clientEnvSchema> | null = null;
 let cachedStorageEnv: z.infer<typeof storageEnvSchema> | null = null;
 
 function formatIssues(issues: z.ZodIssue[]) {
@@ -44,25 +39,6 @@ export function getServerEnv() {
 
   cachedServerEnv = parsed.data;
   return cachedServerEnv;
-}
-
-export function getClientEnv() {
-  if (cachedClientEnv) {
-    return cachedClientEnv;
-  }
-
-  const parsed = clientEnvSchema.safeParse({
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  });
-
-  if (!parsed.success) {
-    throw new Error(
-      `Invalid client environment variables:\n${formatIssues(parsed.error.issues)}`,
-    );
-  }
-
-  cachedClientEnv = parsed.data;
-  return cachedClientEnv;
 }
 
 export function getStorageEnv() {

@@ -1,13 +1,11 @@
 "use client";
 
 import { createAuthClient } from "better-auth/react";
-import { getClientEnv } from "@/lib/env";
 import type { AppRole } from "@/lib/rbac";
 
-const env = getClientEnv();
-
 export const authClient = createAuthClient({
-  baseURL: env.NEXT_PUBLIC_APP_URL,
+  // Let Better Auth resolve the current browser origin so production builds
+  // do not bake in a stale NEXT_PUBLIC_APP_URL like http://localhost:3000.
 });
 
 export type AuthSession = typeof authClient.$Infer.Session;
