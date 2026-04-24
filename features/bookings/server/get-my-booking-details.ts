@@ -3,21 +3,29 @@ import { db } from "@/db";
 import { amenity, booking, hall, hallAmenities, hallPhoto, user } from "@/db/schema";
 import { deriveBookingDisplayCode } from "@/features/bookings/lib/booking-display";
 import {
-  adminBookingDetailsPayloadSchema,
-  type AdminBookingDetailsPayload,
-} from "@/features/admin/schemas/admin-booking-details.schema";
+  myBookingDetailsPayloadSchema,
+  type MyBookingDetailsPayload,
+} from "@/features/bookings/schemas/my-booking-details.schema";
 import { resolveHallPhotoUrl } from "@/lib/hall-photo";
+
+type GetMyBookingDetailsArgs = {
+  bookingId: string;
+  userId: string;
+};
 
 function normalizeOptionalText(value: string | null | undefined) {
   const normalizedValue = value?.trim() ?? "";
   return normalizedValue.length > 0 ? normalizedValue : null;
 }
 
-export async function getAdminBookingDetails(
-  bookingId: string,
-): Promise<AdminBookingDetailsPayload | null> {
+export async function getMyBookingDetails({
+  bookingId,
+  userId,
+}: GetMyBookingDetailsArgs): Promise<MyBookingDetailsPayload | null> {
   const normalizedBookingId = bookingId.trim();
-  if (normalizedBookingId.length === 0) {
+  const normalizedUserId = userId.trim();
+
+  if (normalizedBookingId.length === 0 || normalizedUserId.length === 0) {
     return null;
   }
 
@@ -45,10 +53,10 @@ export async function getAdminBookingDetails(
       hallName: hall.name,
       hallCity: hall.city,
       hallState: hall.state,
+      hallCountry: hall.country,
       hallMaxCapacity: hall.maxCapacity,
       hallCoverPhotoUrl: hall.coverPhotoUrl,
       hallStatus: hall.status,
-      requesterId: user.id,
       requesterName: user.name,
       requesterEmail: user.email,
       requesterImage: user.image,
@@ -56,7 +64,7 @@ export async function getAdminBookingDetails(
     .from(booking)
     .leftJoin(hall, eq(booking.hallId, hall.id))
     .leftJoin(user, eq(booking.bookerUserId, user.id))
-    .where(eq(booking.id, normalizedBookingId))
+    .where(and(eq(booking.id, normalizedBookingId), eq(booking.bookerUserId, normalizedUserId)))
     .limit(1)
     .then((rows) => rows[0] ?? null);
 
@@ -91,7 +99,7 @@ export async function getAdminBookingDetails(
       .orderBy(asc(hallAmenities.sortOrder), asc(hallAmenities.id)),
   ]);
 
-  return adminBookingDetailsPayloadSchema.parse({
+  return myBookingDetailsPayloadSchema.parse({
     booking: {
       id: bookingRow.id,
       displayCode: deriveBookingDisplayCode(bookingRow.id),
@@ -113,7 +121,6 @@ export async function getAdminBookingDetails(
       updatedAtIso: bookingRow.updatedAt.toISOString(),
     },
     requester: {
-      id: bookingRow.requesterId ?? bookingRow.id,
       name: bookingRow.requesterName ?? null,
       email: bookingRow.requesterEmail ?? null,
       image: normalizeOptionalText(bookingRow.requesterImage),
@@ -124,6 +131,7 @@ export async function getAdminBookingDetails(
       name: bookingRow.hallName,
       city: bookingRow.hallCity,
       state: bookingRow.hallState,
+      country: bookingRow.hallCountry,
       maxCapacity: bookingRow.hallMaxCapacity,
       coverPhotoUrl: resolveHallPhotoUrl(bookingRow.hallCoverPhotoUrl),
       status: bookingRow.hallStatus,

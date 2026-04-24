@@ -270,7 +270,7 @@ export function MyBookingsListClient({
                     variant="outline"
                     className="h-9 rounded-md border-zinc-300 bg-white px-4 text-sm hover:bg-zinc-50"
                   >
-                    <Link href={`/halls/${item.hallSlug}`}>{isUpcoming ? "View Details" : "View Hall"}</Link>
+                    <Link href={`/my-bookings/${item.id}`}>View Details</Link>
                   </Button>
                   {canCancel ? (
                     <Button

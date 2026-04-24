@@ -225,7 +225,7 @@ export function BookingRequestSubmittedPageClient({
                 variant="outline"
                 className="mt-3 h-10 w-full rounded-md border-zinc-300 bg-white"
               >
-                <Link href="/my-bookings">View booking</Link>
+                <Link href={`/my-bookings/${payload.bookingId}`}>View booking</Link>
               </Button>
 
               <div className="mt-4 space-y-2 text-sm">

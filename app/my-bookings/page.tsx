@@ -1,5 +1,4 @@
 import { and, desc, eq, ilike, or } from "drizzle-orm";
-import { Search } from "lucide-react";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/shared/site-header";
 import { db } from "@/db";
