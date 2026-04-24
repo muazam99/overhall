@@ -11,8 +11,6 @@ import { authClient } from "@/lib/auth-client";
 type AuthMode = "login" | "register";
 
 const AUTH_VISUAL_IMAGES = [
-  "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=1600&q=80",
@@ -246,15 +244,6 @@ export function HomeAuthModal({
                 className="h-11 w-full rounded-md bg-zinc-900 text-zinc-50 hover:bg-zinc-800"
               >
                 {isSubmitting ? "Signing in..." : "Continue with Email"}
-              </Button>
-
-              <Button
-                type="button"
-                disabled
-                variant="outline"
-                className="h-11 w-full rounded-md border-zinc-300 bg-white text-zinc-500"
-              >
-                Continue with Google (coming soon)
               </Button>
             </form>
           ) : (

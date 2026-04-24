@@ -1,16 +1,17 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useOptionalAuthPrompt } from "@/features/auth/components/auth-prompt-provider";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Browse Halls", href: "/halls" },
-  { label: "How It Works", href: "/#how-it-works" },
 ];
 
 type SiteHeaderProps = {
@@ -97,13 +98,40 @@ export function SiteHeader({
           >
             <Link href="/admin/halls">Manage Halls</Link>
           </Button>
-          <Button
-            variant="outline"
-            asChild
-            className="h-8 rounded-md border-zinc-300 px-3 text-[10px] text-zinc-900 sm:h-9 sm:px-4 sm:text-sm"
-          >
-            <Link href="/admin">Admin</Link>
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-8 rounded-md border-zinc-300 px-3 text-[10px] text-zinc-900 sm:h-9 sm:px-4 sm:text-sm"
+              >
+                <span className="inline-flex items-center gap-1">
+                  <span>Admin</span>
+                  <ChevronDown className="size-3 sm:size-4" />
+                </span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="w-44 rounded-xl border-zinc-200 bg-white p-1 shadow-[0_14px_30px_rgba(0,0,0,0.12)]"
+            >
+              <Button
+                variant="ghost"
+                asChild
+                className="h-9 w-full justify-start rounded-lg px-3 text-xs text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 sm:text-sm"
+              >
+                <Link href="/">Go To Home</Link>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-9 w-full justify-start rounded-lg px-3 text-xs text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 sm:text-sm"
+                onClick={handleSignOut}
+              >
+                Sign Out
+              </Button>
+            </PopoverContent>
+          </Popover>
         </nav>
       </header>
     );
