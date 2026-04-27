@@ -1,3 +1,14 @@
+## KRACKED DEV GUIDE
+
+For the kracked dev submission, here are the login credentials for testing as user and admin:
+
+- Admin: `admin@test.com` / `12341234`
+- Demo user: `test@test.com` / `12341234`
+
+Use the admin account for `/admin` and the demo user account for standard booking/user flows.
+
+These credentials are for local demo and kracked dev bounty review only
+
 # Overhall
 
 Architecture-first Next.js baseline using:
@@ -98,7 +109,7 @@ npm run db:migrate
 npm run db:seed:halls
 ```
 
-This seeds sample halls, amenities, and a seed host user into your local database.
+This seeds sample halls, amenities, and hackathon-ready demo accounts into your local database.
 
 ### 7. Start the app
 
@@ -135,7 +146,7 @@ Frontend flow:
 - `npm run db:generate`: generate a new SQL migration after changing the Drizzle schema
 - `npm run db:migrate`: apply committed migrations to the configured PostgreSQL database
 - `npm run db:studio`: open Drizzle Studio
-- `npm run db:seed:halls`: seed sample halls and amenities
+- `npm run db:seed:halls`: seed sample halls, amenities, and hackathon demo accounts
 - `npm run admin:promote -- you@example.com`: manually promote a user to admin role
 
 ## Folder Conventions
@@ -151,7 +162,7 @@ Frontend flow:
 
 - Roles are enforced as `user` and `admin` on the `user.role` column.
 - Registration always creates `role=user`.
-- Admin role assignment is manual only via `npm run admin:promote`.
+- Admin role assignment is manual via `npm run admin:promote`, except for the seeded hackathon admin account created by `npm run db:seed:halls`.
 - `/admin` is middleware-protected and server-guarded.
 - Unauthorized admin access redirects to `/` and can auto-open login modal using short-lived cookies.
 
